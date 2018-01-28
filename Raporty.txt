@@ -1,20 +1,31 @@
 -- Raport 1: 5 najlepiej sprzedających się produktów --
 PRINT '5 najlepiej sprzedających się produktów'
 
-SELECT TOP 5 ID_produktu, COUNT() FROM Sprzedaz
-...
+SELECT TOP 5 ID_produktu, COUNT(ID_produktu) AS ilosc FROM Sprzedaz
+GROUP BY ID_produktu
+ORDER BY ilosc DESC
 
 -- Raport 2: kurierzy według częstości wybierania --
 PRINT 'kurierzy według częstości wybierania'
 
-SELECT nazwa, COUNT() AS ilosc FROM Kurierzy
+SELECT ID_kuriera, COUNT(ID_kuriera) AS ilosc FROM Sprzedaz
+GROUP BY ID_kuriera
 ORDER BY ilosc DESC
 
 -- Raport 3: dochód z danego miesiąca (parametr) --
 PRINT 'dochód z danego miesiąca'
 
+EXEC DochodMiesieczny @miesiac = '20161001'
+GO
+
 -- Raport 4: wszyscy bezpośredni podwładni danego kierownika (parametr) --
 PRINT 'wszyscy bezpośredni podwładni danego kierownika'
 
+EXEC Podwladni @kierownik = 7
+GO
+
 -- Raport 5: wszystkie transakcje danego sklepu (parametr) -- 
 PRINT 'wszystkie transakcje danego sklepu'
+
+EXEC Transakcje @sklep = 1
+GO
