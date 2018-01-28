@@ -209,7 +209,6 @@ INSERT INTO dbo.Sprzedaz VALUES (48, '20161115', 5, 10, 375, 'kartą', 'odbiór 
 INSERT INTO dbo.Sprzedaz VALUES (49, '20161116', 1, 2, 10, 'kartą', 'odbiór osobisty', NULL);
 INSERT INTO dbo.Sprzedaz VALUES (50, '20161120', 1, 13, 700, 'kartą', 'odbiór osobisty', NULL);
 
-
 IF OBJECT_ID('DochodMiesieczny', 'P') IS NOT NULL
 DROP PROCEDURE DochodMiesieczny
 GO
@@ -220,7 +219,6 @@ SELECT SUM(cena) AS dochod FROM Sprzedaz
 WHERE YEAR(data) = YEAR(@miesiac) AND MONTH(data) = MONTH(@miesiac)
 GO
 
-
 IF OBJECT_ID('Podwladni', 'P') IS NOT NULL
 DROP PROCEDURE Podwladni
 GO
@@ -230,7 +228,6 @@ AS
 SELECT ID, imie, nazwisko FROM Pracownicy
 WHERE ID_kierownika = @kierownik
 GO
-
 
 IF OBJECT_ID('Transakcje', 'P') IS NOT NULL
 DROP PROCEDURE Transakcje
