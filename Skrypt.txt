@@ -1,0 +1,205 @@
+--USE master
+--GO
+
+--IF DB_ID('SklepyMuzyczne') IS NOT NULL
+--CREATE DATABASE SklepyMuzyczne
+--GO
+
+--USE SklepyMuzyczne
+
+
+IF OBJECT_ID('dbo.Sklepy','U') IS NOT NULL
+	DROP TABLE dbo.Sklepy
+	
+IF OBJECT_ID('dbo.Stanowiska','U') IS NOT NULL
+	DROP TABLE dbo.Stanowiska
+	
+IF OBJECT_ID('dbo.Pracownicy','U') IS NOT NULL
+	DROP TABLE dbo.Pracownicy
+	
+IF OBJECT_ID('dbo.Kurierzy','U') IS NOT NULL
+	DROP TABLE dbo.Kurierzy
+
+IF OBJECT_ID('dbo.Produkty','U') IS NOT NULL
+	DROP TABLE dbo.Produkty
+	
+IF OBJECT_ID('dbo.Sprzedaz','U') IS NOT NULL
+	DROP TABLE dbo.Sprzedaz
+	
+CREATE TABLE dbo.Sklepy (
+	ID INT CONSTRAINT PK_SKLE PRIMARY KEY,
+	adres VARCHAR(100),
+	region VARCHAR(100)
+)
+
+CREATE TABLE dbo.Stanowiska (
+	nazwa VARCHAR(100) CONSTRAINT PK_STAN PRIMARY KEY,
+	placa_min MONEY,
+	placa_max MONEY
+)
+
+CREATE TABLE dbo.Pracownicy (
+	ID INT CONSTRAINT PK_PRAC PRIMARY KEY,
+	imie VARCHAR(100),
+	nazwisko VARCHAR(100),
+	stanowisko VARCHAR(100) CONSTRAINT FK_STAN REFERENCES dbo.Stanowiska(nazwa),
+	ID_sklepu INT CONSTRAINT FK_ID_SKLE REFERENCES dbo.Sklepy(ID),
+	placa MONEY,
+	ID_kierownika INT CONSTRAINT FK_ID_SZEF REFERENCES dbo.Pracownicy(ID)
+)
+
+CREATE TABLE dbo.Kurierzy (
+	ID INT CONSTRAINT PK_KURI PRIMARY KEY,
+	nazwa VARCHAR(100),
+	cena MONEY
+)
+
+CREATE TABLE dbo.Produkty (
+	ID INT CONSTRAINT PK_PROD PRIMARY KEY,
+	nazwa VARCHAR(100),
+	cena_katalogowa MONEY,
+	kategoria VARCHAR(100)
+)
+
+CREATE TABLE dbo.Sprzedaz (
+	ID INT CONSTRAINT PK_SPRZ PRIMARY KEY,
+	data DATETIME,
+	ID_sklepu INT CONSTRAINT FK_ID_SKLE REFERENCES dbo.Sklepy(ID),
+	ID_produktu INT CONSTRAINT FK_ID_PROD REFERENCES dbo.Produkty(ID),
+	cena MONEY,
+	metoda_platnosci VARCHAR(100),
+	sposob_dostawy VARCHAR(100),
+	ID_kuriera INT CONSTRAINT FK_ID_KURI REFERENCES dbo.Kurierzy(ID)
+)
+
+INSERT INTO dbo.Sklepy VALUES (1, 'ul. Wielka 12', 'Poznań');
+INSERT INTO dbo.Sklepy VALUES (2, 'ul. Jasna 4/8', 'Warszawa');
+INSERT INTO dbo.Sklepy VALUES (3, 'ul. Armii Polskiej 7', 'Toruń');
+INSERT INTO dbo.Sklepy VALUES (4, 'ul. Zamojska 33', 'Kraków');
+INSERT INTO dbo.Sklepy VALUES (5, 'ul. Górnicza 12/4', 'Katowice');
+INSERT INTO dbo.Sklepy VALUES (6, 'ul. Wysoka 87', 'Zielona Góra');
+INSERT INTO dbo.Sklepy VALUES (7, 'ul. Żeromskiego 3', 'Poznań');
+INSERT INTO dbo.Sklepy VALUES (8, 'ul. Mickiewicza 13/1', 'Piła');
+INSERT INTO dbo.Sklepy VALUES (9, 'Osiedle Młodych 4/2', 'Elbląg');
+INSERT INTO dbo.Sklepy VALUES (10, 'ul. Podgórna 65', 'Zakopane');
+
+INSERT INTO dbo.Stanowiska VALUES ('Prezes', 10000, 12000);
+INSERT INTO dbo.Stanowiska VALUES ('Kierownik zaopatrzenia', 5000, 6000);
+INSERT INTO dbo.Stanowiska VALUES ('Kierownik sprzedaży', 5000, 6000);
+INSERT INTO dbo.Stanowiska VALUES ('Główny księgowy', 7000, 9000);
+INSERT INTO dbo.Stanowiska VALUES ('Księgowy', 4000, 5000);
+INSERT INTO dbo.Stanowiska VALUES ('Informatyk', 4000, 5000);
+INSERT INTO dbo.Stanowiska VALUES ('Kierownik sklepu', 3500, 4000);
+INSERT INTO dbo.Stanowiska VALUES ('Doradca muzyczny', 3000, 3500);
+INSERT INTO dbo.Stanowiska VALUES ('Ekspedient', 2500, 3000);
+INSERT INTO dbo.Stanowiska VALUES ('Pracownik sezonowy', 0, 2000);
+
+INSERT INTO dbo.Pracownicy VALUES (1, 'Jan', 'Brzechwa', 'Prezes', 1, 12000,);
+INSERT INTO dbo.Pracownicy VALUES (2, 'Adam', 'Mickiewicz', 'Kierownik zaopatrzenia', 1, 5400, 1);
+INSERT INTO dbo.Pracownicy VALUES (3, 'Wolfgang Amadeus', 'Mozart', 'Kierownik sprzedaży', 1, 5500, 1);
+INSERT INTO dbo.Pracownicy VALUES (4, 'Agata', 'Czarna', 'Główny księgowy', 1, 8000, 1);
+INSERT INTO dbo.Pracownicy VALUES (5, 'Zosia', 'Motłowska', 'Księgowy', 1, 4500, 4);
+INSERT INTO dbo.Pracownicy VALUES (6, 'Marek', 'Gonzo', 'Informatyk', 1, 5000, 1);
+INSERT INTO dbo.Pracownicy VALUES (7, 'Adam', 'Szybki', 'Kierownik sklepu', 1, 3500, 1);
+INSERT INTO dbo.Pracownicy VALUES (8, 'Magda', 'Tolipska', 'Ekspedient', 1, 3000, 7);
+INSERT INTO dbo.Pracownicy VALUES (9, 'Andrzej', 'Jakmunaimie', 'Ekspedient', 1, 3000, 7);
+INSERT INTO dbo.Pracownicy VALUES (10, 'Hubert', 'Mocny', 'Ekspedient', 1, 3000, 7);
+INSERT INTO dbo.Pracownicy VALUES (11, 'Fryderyk', 'Szopa', 'Kierownik sklepu', 2, 3500, 1);
+INSERT INTO dbo.Pracownicy VALUES (12, 'Aleksander', 'Wielki', 'Ekspedient', 2, 2800, 11);
+INSERT INTO dbo.Pracownicy VALUES (13, 'Miłosz', 'Dobry', 'Ekspedient', 2, 2900, 11);
+INSERT INTO dbo.Pracownicy VALUES (14, 'Kleopatra', 'Księżna', 'Kierownik sklepu', 3, 3600, 1);
+INSERT INTO dbo.Pracownicy VALUES (15, 'Alzheimer', 'Al', 'Ekspedient', 3, 2850, 14);
+INSERT INTO dbo.Pracownicy VALUES (16, 'Maciej', 'Ryba', 'Pracownik sezonowy', 3, 1500, 14);
+INSERT INTO dbo.Pracownicy VALUES (17, 'Marcin', 'Zebiński', 'Kierownik sklepu', 4, 3650, 1);
+INSERT INTO dbo.Pracownicy VALUES (18, 'Nicole', 'Straup', 'Ekspedient', 4, 2800, 17);
+INSERT INTO dbo.Pracownicy VALUES (19, 'Amanda', 'Szafir', 'Kierownik sklepu', 5, 3500, 1);
+INSERT INTO dbo.Pracownicy VALUES (20, 'Zuzanna', 'Frydecka', 'Ekspedient', 5, 2900, 19);
+INSERT INTO dbo.Pracownicy VALUES (21, 'Grzegorz', 'Brzeg', 'Ekspedient', 5, 2900, 19);
+INSERT INTO dbo.Pracownicy VALUES (22, 'Urban', 'Urlej', 'Kierownik sklepu', 6, 3700, 1);
+INSERT INTO dbo.Pracownicy VALUES (23, 'Albinos', 'Kujawa', 'Ekspedient', 6, 2800, 22);
+INSERT INTO dbo.Pracownicy VALUES (24, 'Ryszard', 'Waleczny', 'Kierownik sklepu', 7,3800 , 1);
+INSERT INTO dbo.Pracownicy VALUES (25, 'Bill', 'Gates', 'Informatyk', 7, 4800, 24);
+INSERT INTO dbo.Pracownicy VALUES (26, 'Edward', 'Aaaapa', 'Ekspedient', 7, 2900, 24);
+INSERT INTO dbo.Pracownicy VALUES (27, 'Niemampomysłu', 'Starszy', 'Ekspedient', 7, 2900, 24);
+INSERT INTO dbo.Pracownicy VALUES (28, 'Iza', 'Mała', 'Kierownik sklepu', 8, 3500, 1);
+INSERT INTO dbo.Pracownicy VALUES (29, 'Bolek', 'Lolek', 'Ekspedient', 8, 3000, 28);
+INSERT INTO dbo.Pracownicy VALUES (30, 'Rezygiusz', 'Tericki', 'Kierownik sklepu', 9, 3600, 1);
+INSERT INTO dbo.Pracownicy VALUES (31, 'Pomela', 'Adrenna', 'Ekspedient', 9, 2900, 30);
+INSERT INTO dbo.Pracownicy VALUES (32, 'Sebastian', 'Numicki', 'Pracownik sezonowy', 9, 1000, 30);
+INSERT INTO dbo.Pracownicy VALUES (33, 'Syriusz', 'Black', 'Kierownik sklepu', 10, 3650, 1);
+INSERT INTO dbo.Pracownicy VALUES (34, 'Tomasz', 'Piernik', 'Ekspedient', 10, 2850, 33);
+INSERT INTO dbo.Pracownicy VALUES (35, 'Mikołaj', 'Święty', 'Ekspedient', 10, 2900, 33);
+
+INSERT INTO dbo.Kurierzy VALUES (1, 'DHM', 15);
+INSERT INTO dbo.Kurierzy VALUES (2, 'FerdEx', 17);
+INSERT INTO dbo.Kurierzy VALUES (3, 'UPA', 15);
+INSERT INTO dbo.Kurierzy VALUES (4, 'Poczta Polska', 13);
+INSERT INTO dbo.Kurierzy VALUES (5, 'ABC', 16);
+
+INSERT INTO dbo.Produkty VALUES (1, 'ESP AX-50-BLKS', 1450, 'gitary elektryczne');
+INSERT INTO dbo.Produkty VALUES (2, 'Fender Sratocaster', 10, 'gitary elektryczne');
+INSERT INTO dbo.Produkty VALUES (3, 'Chappman I-1', 2400, 'gitary elektryczne');
+INSERT INTO dbo.Produkty VALUES (4, 'Chappman M-4-BLK', 3600, 'gitary elektryczne');
+INSERT INTO dbo.Produkty VALUES (5, 'Fender P-24', 700, 'gitary elektryczne');
+INSERT INTO dbo.Produkty VALUES (6, 'Fender P-22 3/4', 520, 'gitary elektryczne');
+INSERT INTO dbo.Produkty VALUES (7, 'Fender 50BK', 650, 'gitary akustyczne');
+INSERT INTO dbo.Produkty VALUES (8, 'Yamaha X1', 400, 'gitary akustyczne');
+INSERT INTO dbo.Produkty VALUES (9, 'Yamaha X6', 780, 'gitary akustyczne');
+INSERT INTO dbo.Produkty VALUES (10, 'Stagg VN 1/2', 375, 'skrzypce');
+INSERT INTO dbo.Produkty VALUES (11, 'Vienna V-100', 400, 'skrzypce');
+INSERT INTO dbo.Produkty VALUES (12, 'Stagg VN 4/4', 415, 'skrzypce');
+INSERT INTO dbo.Produkty VALUES (13, 'Sander SV-600 P', 700, 'skrzypce');
+INSERT INTO dbo.Produkty VALUES (14, 'Nuvo TooT 420', 115, 'flety');
+INSERT INTO dbo.Produkty VALUES (15, 'Chester D', 700, 'flety');
+
+INSERT INTO dbo.Sprzedaz VALUES (1, 2016-08-14, 1, 1, 1450, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (2, 2016-08-16, 1, 5, 600, 'kartą', 'odbiór osobisty', );
+INSERT INTO dbo.Sprzedaz VALUES (3, 2016-08-19, 2, 3, 2415, 'kartą', 'wysyłka kurierem', 3);
+INSERT INTO dbo.Sprzedaz VALUES (4, 2016-08-20, 3, 11, 400, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (5, 2016-08-22, 4, 15, 700, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (6, 2016-08-24, 5, 15, 700, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (7, 2016-08-29, 1, 5, 600, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (8, 2016-08-30, 9, 12, 432, 'kartą', 'wysyłka kurierem', 2);
+INSERT INTO dbo.Sprzedaz VALUES (9, 2016-09-02, 7, 11, 400, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (10, 2016-09-03, 1, 7, 650, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (11, 2016-09-05, 2, 6, 535, 'kartą', 'wysyłka kurierem', 1);
+INSERT INTO dbo.Sprzedaz VALUES (12, 2016-09-08, 9, 3, 2340, 'kartą', 'wysyłka kurierem', 5);
+INSERT INTO dbo.Sprzedaz VALUES (13, 2016-09-12, 7, 3, 2400, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (14, 2016-09-13, 7, 14, 400, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (15, 2016-09-13, 8, 2, 10, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (16, 2016-09-15, 10, 14, 390, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (17, 2016-09-16, 10, 14, 390, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (18, 2016-09-17, 3, 9, 780, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (19, 2016-09-22, 1, 8, 400, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (20, 2016-09-23, 1, 2, 10, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (21, 2016-09-25, 4, 4, 3600, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (22, 2016-09-28, 10, 8, 413, 'kartą', 'wysyłka kurierem', 4);
+INSERT INTO dbo.Sprzedaz VALUES (23, 2016-09-29, 6, 8, 400, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (24, 2016-10-01, 10, 7, 650, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (25, 2016-10-02, 0, 4, 3600, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (26, 2016-10-02, 1, 15, , 700'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (27, 2016-10-05, 8, 3, 2400, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (28, 2016-10-06, 2, 10, 387, 'kartą', 'wysyłka kurierem', 2);
+INSERT INTO dbo.Sprzedaz VALUES (29, 2016-10-07, 3, 15, 715, 'kartą', 'wysyłka kurierem', 1);
+INSERT INTO dbo.Sprzedaz VALUES (30, 2016-10-09, 10, 5, 700, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (31, 2016-10-11, 1, 9, 780, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (32, 2016-10-11, 10, 14, 433, 'kartą', 'wysyłka kurierem', 5);
+INSERT INTO dbo.Sprzedaz VALUES (33, 2016-10-12, 9, 6, 520, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (34, 2016-10-13, 10, 14, 436, 'kartą', 'wysyłka kurierem', 4);
+INSERT INTO dbo.Sprzedaz VALUES (35, 2016-10-15, 2, 8, 415, 'kartą', 'wysyłka kurierem', 3);
+INSERT INTO dbo.Sprzedaz VALUES (36, 2016-10-17, 2, 2, 10, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (37, 2016-10-19, 7, 14, 420, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (38, 2016-10-19, 8, 7, 650, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (39, 2016-10-20, 9, 13, 700, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (40, 2016-10-21, 3, 13, 700, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (41, 2016-10-22, 6, 12, 430, 'kartą', 'wysyłka kurierem', 1);
+INSERT INTO dbo.Sprzedaz VALUES (42, 2016-10-23, 1, 11, 400, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (43, 2016-10-28, 1, 3, 2400, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (44, 2016-11-06, 7, 5, 717, 'kartą', 'wysyłka kurierem', 2);
+INSERT INTO dbo.Sprzedaz VALUES (45, 2016-11-07, 4, 9, 755, 'kartą', 'wysyłka kurierem', 4);
+INSERT INTO dbo.Sprzedaz VALUES (46, 2016-11-08, 6, 4, 3520, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (47, 2016-11-10, 2, 7, 650, 'gotówką', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (48, 2016-11-15, 5, 10, 375, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (49, 2016-11-16, 1, 2, 10, 'kartą', 'odbiór osobisty',);
+INSERT INTO dbo.Sprzedaz VALUES (50, 2016-11-20, 1, 13, 700, 'kartą', 'odbiór osobisty',);
+
